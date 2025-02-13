@@ -198,6 +198,32 @@
                     resetkillables();
                     resetValidCells();
                 }
+                else if (validatemove(currentSelectionRow, currentSelectionCol, row, col)=="-1") {
+                    resetpassent(currentSelectionRow,currentSelectionCol)
+                    chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
+                    chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
+                    chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
+                    chessboard[currentSelectionRow][currentSelectionCol-1]=nullPiece;
+                    currentSelection = -1;
+                    action = "pick";
+                    turn = "black";
+                    resetkillables();
+                    resetValidCells();
+                }
+                else if (validatemove(currentSelectionRow, currentSelectionCol, row, col)=="1") {
+                    resetpassent(currentSelectionRow,currentSelectionCol);
+                    chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
+                    chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
+                    chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
+                    console.log(chessboard[currentSelectionRow][currentSelectionCol+1],"is now a nullPiece");
+                    chessboard[currentSelectionRow][currentSelectionCol+1]=nullPiece;
+                    currentSelection = -1;
+                    action = "pick";
+                    turn = "black";
+                    resetkillables();
+                    resetValidCells();
+                }
+                
 
                 if (selectedPiece.color == "White") {
                     currentSelection = cellId;
@@ -254,6 +280,31 @@
                     chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
                     chessboard[currentSelectionRow][currentSelectionCol+1] = chessboard[currentSelectionRow][7];
                     chessboard[currentSelectionRow][7]=nullPiece;
+                    currentSelection = -1;
+                    action = "pick";
+                    turn = "black";
+                    resetkillables();
+                    resetValidCells();
+                }
+                else if (validatemove(currentSelectionRow, currentSelectionCol, row, col)=="-1") {
+                    resetpassent(currentSelectionRow,currentSelectionCol)
+                    chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
+                    chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
+                    chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
+                    chessboard[currentSelectionRow][currentSelectionCol-1]=nullPiece;
+                    currentSelection = -1;
+                    action = "pick";
+                    turn = "black";
+                    resetkillables();
+                    resetValidCells();
+                }
+                else if (validatemove(currentSelectionRow, currentSelectionCol, row, col)=="1") {
+                    resetpassent(currentSelectionRow,currentSelectionCol);
+                    chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
+                    chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
+                    chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
+                    console.log(chessboard[currentSelectionRow][currentSelectionCol+1],"is now a nullPiece");
+                    chessboard[currentSelectionRow][currentSelectionCol+1]=nullPiece;
                     currentSelection = -1;
                     action = "pick";
                     turn = "black";
@@ -371,15 +422,17 @@
                             else if(cellrow - 1 == destinationrow && coldiff==0){
                                 return true;
                             }
-                            else if(cellrow - 1==destinationrow&&coldiff==0){
+                            else if(cellrow - 1==destinationrow&&coldiff==1){
                                 if(cellcol>destinationcol){
                                     if(chessboard[cellrow][cellcol-1].enpassent==1){
-                                        console.log(true);
+                                        killables.push({x:destinationrow,y:destinationcol});
+                                        return("-1");
                                     }
                                 }
                                 else if(cellcol<destinationcol){
                                     if(chessboard[cellrow][cellcol+1].enpassent==1){
-                                        console.log(true);
+                                        killables.push({x:destinationrow,y:destinationcol});
+                                        return("1");
                                     }
                                 }
                             }                        }
@@ -391,15 +444,17 @@
                             else if(coldiff==0&&cellrow + 1 == destinationrow){
                                 return true;
                             }
-                            else if(cellrow + 1==destinationrow&&coldiff==0){
+                            else if(cellrow + 1==destinationrow&&coldiff==1){
                                 if(cellcol>destinationcol){
                                     if(chessboard[cellrow][cellcol-1].enpassent==1){
-                                        console.log(true);
+                                        killables.push({x:destinationrow,y:destinationcol});
+                                        return("-1");
                                     }
                                 }
                                 else if(cellcol<destinationcol){
                                     if(chessboard[cellrow][cellcol+1].enpassent==1){
-                                        console.log(true);
+                                        killables.push({x:destinationrow,y:destinationcol});
+                                        return("1");
                                     }
                                 }
                             } 
