@@ -1,23 +1,15 @@
 class Piece {
 
-    constructor(color, type, enpassent, moves_done) {
+    constructor(color, type) {
         this.color = color;
         this.type = type;
-        this.enpassent = enpassent;
-        this.moves_done = moves_done;
+        this.moves_done = 0;
     }
 
 
     displayText() {
 
         console.log("inside displayText");
-
-        // text_icon_map = {
-        //     "white-King": "♔"
-
-        // }
-
-        // text_icon_map.get(this.color + "-" + this.type)
 
         switch (this.color) {
             case "White":
