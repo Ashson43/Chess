@@ -395,26 +395,22 @@
                         }
                     }
                 }
-                else if (cell.type == "Rook") {
-                    if (checkintermediates(cellrow, cellcol, destinationrow, destinationcol, "horizontal")) {
-                        return true;
-                    }
-                }
-                else if (cell.type == "Bishop") {
-                    if (checkintermediates(cellrow, cellcol, destinationrow, destinationcol, "diagonal")) {
-                        return true;
-                    }
-                }
-                else if (cell.type == "Knight") {
-                    if (coldiff == 2 && rowdiff == 1 || coldiff == 1 && rowdiff == 2) {
-                        if (chessboard[destinationrow][destinationcol] != nullPiece) {
-                            killables.push({ x: destinationrow, y: destinationcol });
-                        }
-                        return true;
-                    }
-
-                }
                 else if (cell.type == "King") {
+
+                    var moveResult = checkMove(chessboard, cellrow, cellcol, destinationrow, destinationcol);
+
+                    if (!moveResult.isValid)
+                        return false;
+                    if (moveResult.willKill)
+                        killables.push({ x: destinationrow, y: destinationcol });
+
+                    if (moveResult.type == "simple")
+
+                        return true;
+                    else
+                        return moveResult.type;
+
+
                     var coldifference = cellcol - destinationcol;
                     var rowdifference = cellrow - destinationrow;
                     if (coldiff < 2 && rowdiff < 2) {
@@ -432,25 +428,20 @@
                         }
                     }
                 }
-                else if (cell.type == "Queen") {
-                    if (coldiff == rowdiff) {
-                        if (checkintermediates(cellrow, cellcol, destinationrow, destinationcol, "diagonal")) {
-                            return true;
-                        }
-                    }
-                    else if ((coldiff == 0 && rowdiff != 0) || (rowdiff == 0 && coldiff != 0)) {
-                        if (checkintermediates(cellrow, cellcol, destinationrow, destinationcol, "horizontal")) {
-                            return true;
-                        }
-                    }
+                else {
+
+                    var moveResult = checkMove(chessboard, cellrow, cellcol, destinationrow, destinationcol);
+
+                    if (!moveResult.isValid)
+                        return false;
+                    if (moveResult.willKill)
+                        killables.push({ x: destinationrow, y: destinationcol });
+                    return true;
+
                 }
+
             }
 
-            // return {
-            //     isValid: true,
-            //     isKilling: true,
-            //     type: "castle"
-            // };
 
         }
         function validateCells(cellrow, cellcol) {
@@ -472,55 +463,7 @@
             // resetValidCells();
         }
 
-        function checkintermediates(cellrow, cellcol, destinationrow, destinationcol, type) {
-            var rowdifference = cellrow - destinationrow;
-            var coldifference = cellcol - destinationcol;
-            var coldiff = Math.abs(coldifference);
-            var rowdiff = Math.abs(rowdifference);
-            var coldir = coldifference / coldiff;
-            var rowdir = rowdifference / rowdiff;
 
-            if (type == "diagonal") {
-                if (coldiff == rowdiff) {
-                    for (var x = 1; x < coldiff; x++) {
-                        if (chessboard[cellrow - rowdir * x][cellcol - coldir * x] != nullPiece) {
-                            return false;
-                        }
-                    }
-                    if (chessboard[destinationrow][destinationcol] != nullPiece) {
-                        killables.push({ x: destinationrow, y: destinationcol });
-                    }
-                    return true;
-                }
-            }
-            else if (type = "horizontal") {
-                if (coldiff == 0) {
-                    for (var y = 1; y < rowdiff; y++) {
-                        if (chessboard[cellrow - y * rowdir][cellcol] != nullPiece) {
-                            return false;
-                        }
-                    }
-                    if (chessboard[destinationrow][destinationcol] != nullPiece) {
-                        killables.push({ x: destinationrow, y: destinationcol });
-                    }
-                    return true;
-                }
-                else if (rowdiff == 0) {
-                    for (var z = 1; z < coldiff; z++) {
-                        if (chessboard[cellrow][cellcol - z * coldir] != nullPiece) {
-                            return false;
-                        }
-                    }
-                    if (chessboard[destinationrow][destinationcol] != nullPiece) {
-                        killables.push({ x: destinationrow, y: destinationcol });
-                    }
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-        }
         function resetKillables() {
             killables = [];
             // resetKillables();

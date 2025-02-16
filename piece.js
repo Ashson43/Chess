@@ -9,8 +9,6 @@ class Piece {
 
     displayText() {
 
-        console.log("inside displayText");
-
         switch (this.color) {
             case "White":
                 switch (this.type) {
