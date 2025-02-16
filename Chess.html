@@ -3,9 +3,12 @@
 
 <head>
     <link rel="stylesheet" href="chess-styles.css">
+    <script src="piece.js"></script>
+    <script src="chessboard.js" ></script>
+    <!-- <script src="game.js" ></script> -->
 </head>
 
-<body>
+<body onload="resetboard()">
     <table>
         <tr>
             <td bgcolor="grey" height="100%" width="25.75%">
@@ -33,110 +36,23 @@
             </td>
         </tr>
     </table>
-    <button onclick="resetboard(white)">start</button>
-    <button onclick="undo()">Undo last move
-    </button>
+    <button onclick="resetboard()">start</button>
     <script>
 
-        validcells = [];
-        class Piece {
-            constructor(color, type,enpassent,moves_done) {
-                this.color = color;
-                this.type = type;
-                this.enpassent = enpassent;
-                this.moves_done =moves_done;
-            }
-
-
-            displayText() {
-                switch (this.color) {
-                    case "White":
-                        switch (this.type) {
-                            case "King":
-                                return "♔";
-                            case "Queen":
-                                return "♕";
-                            case "Knight":
-                                return "♘";
-                            case "Pawn":
-                                return "♙";
-                            case "Rook":
-                                return "♖";
-                            case "Bishop":
-                                return "♗";
-                        }
-                    case "Black":
-                        switch (this.type) {
-                            case "King":
-                                return "♚";
-                            case "Queen":
-                                return "♛";
-                            case "Knight":
-                                return "♞";
-                            case "Pawn":
-                                return "♟";
-                            case "Rook":
-                                return "♜";
-                            case "Bishop":
-                                return "♝";
-                        }
-                    default: return "";
-                }
-            }
-        }
-
-
-
-        var BR1 = new Piece("Black", "Rook",0,0),
-            BN1 = new Piece("Black", "Knight",0,0),
-            BB1 = new Piece("Black", "Bishop",0,0),
-            BQ = new Piece("Black", "Queen",0,0),
-            BK = new Piece("Black", "King",0,0),
-            BB2 = new Piece("Black", "Bishop",0,0),
-            BN2 = new Piece("Black", "Knight",0,0),
-            BR2 = new Piece("Black", "Rook",0,0),
-            BP1 = new Piece("Black", "Pawn",0,0),
-            BP2 = new Piece("Black", "Pawn",0,0),
-            BP3 = new Piece("Black", "Pawn",0,0),
-            BP4 = new Piece("Black", "Pawn",0,0),
-            BP5 = new Piece("Black", "Pawn",0,0),
-            BP6 = new Piece("Black", "Pawn",0,0),
-            BP7 = new Piece("Black", "Pawn",0,0),
-            BP8 = new Piece("Black", "Pawn",0,0),
-            WR1 = new Piece("White", "Rook",0,0),
-            WN1 = new Piece("White", "Knight",0,0),
-            WB1 = new Piece("White", "Bishop",0,0),
-            WQ = new Piece("White", "Queen",0,0),
-            WK = new Piece("White", "King",0,0),
-            WB2 = new Piece("White", "Bishop",0,0),
-            WN2 = new Piece("White", "Knight",0,0),
-            WR2 = new Piece("White", "Rook",0,0),
-            WP1 = new Piece("White", "Pawn",0,0),
-            WP2 = new Piece("White", "Pawn",0,0),
-            WP3 = new Piece("White", "Pawn",0,0),
-            WP4 = new Piece("White", "Pawn",0,0),
-            WP5 = new Piece("White", "Pawn",0,0),
-            WP6 = new Piece("White", "Pawn",0,0),
-            WP7 = new Piece("White", "Pawn",0,0),
-            WP8 = new Piece("White", "Pawn",0,0);
-
-        nullPiece = new Piece("", "",0,-1);
-        var oldcellId;
-        var oldselcell;
+        validCells = [];
+        
         var turn = "white";
         var action = "pick"
-        var killables= [];
+        var killables = [];
         var currentSelection = -1;
-        var chessboard = [
-            [BR1, BN1, BB1, BQ, BK, BB2, BN2, BR2],
-            [BP1, BP2, BP3, BP4, BP5, BP6, BP7, BP8],
-            [nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece],
-            [nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece],
-            [nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece],
-            [nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece],
-            [WP1, WP2, WP3, WP4, WP5, WP6, WP7, WP8],
-            [WR1, WN1, WB1, WQ, WK, WB2, WN2, WR2],
-        ];
+
+
+        // var game = new Game();
+        // var chessboard = game.chessboard;
+
+        var chessboard = resetChessBoard();
+
+
 
         let history = [];
 
@@ -155,84 +71,85 @@
                     currentSelectionRow = Math.floor(currentSelection / 8);
                     currentSelectionCol = currentSelection % 8;
                     action = "place";
-                    resetkillables();
+                    resetKillables();
                     resetValidCells();
-                    validatecells(currentSelectionRow, currentSelectionCol)
+                    validateCells(currentSelectionRow, currentSelectionCol)
                 }
             }
             else if (turn == "white" && action == "place") {
-                if (validatemove(currentSelectionRow, currentSelectionCol, row, col)==true) {
-                    resetpassent(currentSelectionRow,currentSelectionCol)
+                if (validateMove(currentSelectionRow, currentSelectionCol, row, col) == true) {
+                    resetpassent(currentSelectionRow, currentSelectionCol)
                     chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
                     chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
                     chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
                     currentSelection = -1;
                     action = "pick";
                     turn = "black";
-                    resetkillables();
+                    resetKillables();
                     resetValidCells();
                 }
-                else if(validatemove(currentSelectionRow, currentSelectionCol, row, col)=="queen_castle"){
-                    resetpassent(currentSelectionRow,currentSelectionCol)
+                else if (validateMove(currentSelectionRow, currentSelectionCol, row, col) == "queen_castle") {
+                    resetpassent(currentSelectionRow, currentSelectionCol)
                     chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
                     chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
                     chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
-                    chessboard[currentSelectionRow][currentSelectionCol-1] = chessboard[currentSelectionRow][0];
-                    chessboard[currentSelectionRow][0]=nullPiece;
+                    chessboard[currentSelectionRow][currentSelectionCol - 1] = chessboard[currentSelectionRow][0];
+                    chessboard[currentSelectionRow][0] = nullPiece;
                     currentSelection = -1;
                     action = "pick";
                     turn = "black";
-                    resetkillables();
+                    resetKillables();
                     resetValidCells();
                 }
-                else if(validatemove(currentSelectionRow, currentSelectionCol, row, col)=="castle"){
-                    resetpassent(currentSelectionRow,currentSelectionCol)
+                else if (validateMove(currentSelectionRow, currentSelectionCol, row, col) == "castle") {
+                    resetpassent(currentSelectionRow, currentSelectionCol)
                     chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
                     chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
                     chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
-                    chessboard[currentSelectionRow][currentSelectionCol+1] = chessboard[currentSelectionRow][7];
-                    chessboard[currentSelectionRow][7]=nullPiece;
+                    chessboard[currentSelectionRow][currentSelectionCol + 1] = chessboard[currentSelectionRow][7];
+                    chessboard[currentSelectionRow][7] = nullPiece;
                     currentSelection = -1;
                     action = "pick";
                     turn = "black";
-                    resetkillables();
+                    resetKillables();
                     resetValidCells();
                 }
-                else if (validatemove(currentSelectionRow, currentSelectionCol, row, col)=="-1") {
-                    resetpassent(currentSelectionRow,currentSelectionCol)
+                else if (validateMove(currentSelectionRow, currentSelectionCol, row, col) == "-1") {
+                    resetpassent(currentSelectionRow, currentSelectionCol)
                     chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
                     chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
                     chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
-                    chessboard[currentSelectionRow][currentSelectionCol-1]=nullPiece;
+                    chessboard[currentSelectionRow][currentSelectionCol - 1] = nullPiece;
                     currentSelection = -1;
                     action = "pick";
                     turn = "black";
-                    resetkillables();
+                    resetKillables();
                     resetValidCells();
                 }
-                else if (validatemove(currentSelectionRow, currentSelectionCol, row, col)=="1") {
-                    resetpassent(currentSelectionRow,currentSelectionCol);
+                else if (validateMove(currentSelectionRow, currentSelectionCol, row, col) == "one") {
+                    console.log(chessboard[currentSelectionRow][currentSelectionCol]);
+                    resetpassent(currentSelectionRow, currentSelectionCol);
                     chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
                     chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
                     chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
-                    console.log(chessboard[currentSelectionRow][currentSelectionCol+1],"is now a nullPiece");
-                    chessboard[currentSelectionRow][currentSelectionCol+1]=nullPiece;
+                    console.log(chessboard[currentSelectionRow][currentSelectionCol + 1], "is now a nullPiece");
+                    chessboard[currentSelectionRow][currentSelectionCol + 1] = nullPiece;
                     currentSelection = -1;
                     action = "pick";
                     turn = "black";
-                    resetkillables();
+                    resetKillables();
                     resetValidCells();
                 }
-                
+
 
                 if (selectedPiece.color == "White") {
                     currentSelection = cellId;
                     currentSelectionRow = Math.floor(currentSelection / 8);
                     currentSelectionCol = currentSelection % 8;
                     action = "place";
-                    resetkillables();
+                    resetKillables();
                     resetValidCells();
-                    validatecells(currentSelectionRow, currentSelectionCol);
+                    validateCells(currentSelectionRow, currentSelectionCol);
                 }
             }
             else if (turn == "black" && action == "pick") {
@@ -241,85 +158,86 @@
                     currentSelectionRow = Math.floor(currentSelection / 8);
                     currentSelectionCol = currentSelection % 8;
                     action = "place";
-                    resetkillables();
+                    resetKillables();
                     resetValidCells();
-                    validatecells(currentSelectionRow, currentSelectionCol);
+                    validateCells(currentSelectionRow, currentSelectionCol);
                 }
             }
             else if (turn == "black" && action == "place") {
 
                 if (selectedPiece == nullPiece || selectedPiece.color == "White") {
-                    if (validatemove(currentSelectionRow, currentSelectionCol, row, col)==true) {
-                        resetpassent(currentSelectionRow,currentSelectionCol)
+                    if (validateMove(currentSelectionRow, currentSelectionCol, row, col) == true) {
+                        resetpassent(currentSelectionRow, currentSelectionCol)
                         chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
                         chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
                         chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
                         currentSelection = -1;
                         action = "pick";
                         turn = "white";
-                        resetkillables();
+                        resetKillables();
                         resetValidCells();
                     }
-                    else if(validatemove(currentSelectionRow, currentSelectionCol, row, col)=="queen_castle"){
-                    resetpassent(currentSelectionRow,currentSelectionCol)
-                    chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
-                    chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
-                    chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
-                    chessboard[currentSelectionRow][currentSelectionCol-1] = chessboard[currentSelectionRow][0];
-                    chessboard[currentSelectionRow][0]=nullPiece;
-                    currentSelection = -1;
-                    action = "pick";
-                    turn = "black";
-                    resetkillables();
-                    resetValidCells();
-                }
-                else if(validatemove(currentSelectionRow, currentSelectionCol, row, col)=="castle"){
-                    resetpassent(currentSelectionRow,currentSelectionCol)
-                    chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
-                    chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
-                    chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
-                    chessboard[currentSelectionRow][currentSelectionCol+1] = chessboard[currentSelectionRow][7];
-                    chessboard[currentSelectionRow][7]=nullPiece;
-                    currentSelection = -1;
-                    action = "pick";
-                    turn = "black";
-                    resetkillables();
-                    resetValidCells();
-                }
-                else if (validatemove(currentSelectionRow, currentSelectionCol, row, col)=="-1") {
-                    resetpassent(currentSelectionRow,currentSelectionCol)
-                    chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
-                    chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
-                    chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
-                    chessboard[currentSelectionRow][currentSelectionCol-1]=nullPiece;
-                    currentSelection = -1;
-                    action = "pick";
-                    turn = "black";
-                    resetkillables();
-                    resetValidCells();
-                }
-                else if (validatemove(currentSelectionRow, currentSelectionCol, row, col)=="1") {
-                    resetpassent(currentSelectionRow,currentSelectionCol);
-                    chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
-                    chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
-                    chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
-                    console.log(chessboard[currentSelectionRow][currentSelectionCol+1],"is now a nullPiece");
-                    chessboard[currentSelectionRow][currentSelectionCol+1]=nullPiece;
-                    currentSelection = -1;
-                    action = "pick";
-                    turn = "black";
-                    resetkillables();
-                    resetValidCells();
-                }
+                    else if (validateMove(currentSelectionRow, currentSelectionCol, row, col) == "queen_castle") {
+                        resetpassent(currentSelectionRow, currentSelectionCol)
+                        chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
+                        chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
+                        chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
+                        chessboard[currentSelectionRow][currentSelectionCol - 1] = chessboard[currentSelectionRow][0];
+                        chessboard[currentSelectionRow][0] = nullPiece;
+                        currentSelection = -1;
+                        action = "pick";
+                        turn = "white";
+                        resetKillables();
+                        resetValidCells();
+                    }
+                    else if (validateMove(currentSelectionRow, currentSelectionCol, row, col) == "castle") {
+                        resetpassent(currentSelectionRow, currentSelectionCol)
+                        chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
+                        chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
+                        chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
+                        chessboard[currentSelectionRow][currentSelectionCol + 1] = chessboard[currentSelectionRow][7];
+                        chessboard[currentSelectionRow][7] = nullPiece;
+                        currentSelection = -1;
+                        action = "pick";
+                        turn = "white";
+                        resetKillables();
+                        resetValidCells();
+                    }
+                    else if (validateMove(currentSelectionRow, currentSelectionCol, row, col) == "-1") {
+                        resetpassent(currentSelectionRow, currentSelectionCol)
+                        chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
+                        chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
+                        chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
+                        chessboard[currentSelectionRow][currentSelectionCol - 1] = nullPiece;
+                        currentSelection = -1;
+                        action = "pick";
+                        turn = "white";
+                        resetKillables();
+                        resetValidCells();
+                    }
+                    else if (validateMove(currentSelectionRow, currentSelectionCol, row, col) == "one") {
+                        console.log()
+                        resetpassent(currentSelectionRow, currentSelectionCol);
+                        chessboard[currentSelectionRow][currentSelectionCol].moves_done++;
+                        chessboard[row][col] = chessboard[currentSelectionRow][currentSelectionCol];
+                        console.log(chessboard[currentSelectionRow][currentSelectionCol + 1]);
+                        chessboard[currentSelectionRow][currentSelectionCol] = nullPiece;
+                        chessboard[currentSelectionRow][currentSelectionCol + 1] = nullPiece;
+                        currentSelection = -1;
+                        action = "pick";
+                        turn = "white";
+                        resetKillables();
+                        resetValidCells();
+                    }
                 }
                 else if (selectedPiece.color == "Black") {
                     currentSelection = cellId;
                     action = "place";
                     currentSelectionRow = Math.floor(currentSelection / 8);
                     currentSelectionCol = currentSelection % 8;
-                    resetkillables();
+                    resetKillables();
                     resetValidCells();
-                    validatecells(currentSelectionRow, currentSelectionCol);
+                    validateCells(currentSelectionRow, currentSelectionCol);
                 }
             }
 
@@ -348,6 +266,7 @@
                     var cell = row.insertCell(y);
                     cell.setAttribute("id", currentcell);
                     cell.setAttribute('onclick', 'cellClicked(' + currentcell + ');');
+                    console.log("text for piece at ",x, "and ", y, " is ", chessboard[x][y].displayText());
                     cell.innerHTML = chessboard[x][y].displayText();
 
                     if (chessboard[x][y].color == "Black") {
@@ -364,7 +283,7 @@
                         cell.classList.add("black-square");
                     }
                     currentcell++;
-                    validcells.forEach(element => {
+                    validCells.forEach(element => {
                         if (element.x == x && element.y == y) {
                             cell.classList.add("valid");
                         }
@@ -386,28 +305,22 @@
 
             }
         }
-        function resetboard(turn) {
-            chessboard = [
-                [BR1, BN1, BB1, BQ, BK, BB2, BN2, BR2],
-                [BP1, BP2, BP3, BP4, BP5, BP6, BP7, BP8],
-                [nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece],
-                [nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece],
-                [nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece],
-                [nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece, nullPiece],
-                [WP1, WP2, WP3, WP4, WP5, WP6, WP7, WP8],
-                [WR1, WN1, WB1, WQ, WK, WB2, WN2, WR2],
-            ];
-            turn = "white";
+        function resetboard() {
+
+            // resetGame();
+
+            chessboard = resetChessBoard();
+
             let history = [];
             var action = "pick"
             var currentSelection = -1;
 
-            drawboard(turn)
+            drawboard("white")
         }
-        resetboard("white")
-        function validatemove(cellrow, cellcol, destinationrow, destinationcol) {
+
+        function validateMove(cellrow, cellcol, destinationrow, destinationcol) {
             var cell = chessboard[cellrow][cellcol];
-            cell.enpassent=0
+            cell.enpassent = 0
             var destination = chessboard[destinationrow][destinationcol];
             var rowdiff = Math.abs(cellrow - destinationrow);
             var coldiff = Math.abs(cellcol - destinationcol);
@@ -416,60 +329,62 @@
                     if (destination == nullPiece) {
                         if (cell.color == "White" && chessboard[cellrow - 1][cellcol] == nullPiece) {
                             if ((coldiff == 0 && (cellrow - 2 == destinationrow && cellrow == 6))) {
-                                cell.enpassent=1;
+                                cell.enpassent = 1;
                                 return true;
                             }
-                            else if(cellrow - 1 == destinationrow && coldiff==0){
+                            else if (cellrow - 1 == destinationrow && coldiff == 0) {
                                 return true;
                             }
-                            else if(cellrow - 1==destinationrow&&coldiff==1){
-                                if(cellcol>destinationcol){
-                                    if(chessboard[cellrow][cellcol-1].enpassent==1){
-                                        killables.push({x:destinationrow,y:destinationcol});
-                                        return("-1");
+                            else if (cellrow - 1 == destinationrow && coldiff == 1) {
+                                if (cellcol > destinationcol) {
+                                    if (chessboard[cellrow][cellcol - 1].enpassent == 1) {
+                                        killables.push({ x: destinationrow, y: destinationcol });
+                                        return ("-1");
                                     }
                                 }
-                                else if(cellcol<destinationcol){
-                                    if(chessboard[cellrow][cellcol+1].enpassent==1){
-                                        killables.push({x:destinationrow,y:destinationcol});
-                                        return("1");
+                                else if (cellcol < destinationcol) {
+                                    if (chessboard[cellrow][cellcol + 1].enpassent == 1) {
+                                        killables.push({ x: destinationrow, y: destinationcol });
+                                        console.log(chessboard[cellrow][cellcol]);
+                                        return ("one");
                                     }
                                 }
-                            }                        }
+                            }
+                        }
                         else if (cell.color == "Black" && chessboard[cellrow + 1][cellcol] == nullPiece) {
                             if (coldiff == 0 && (cellrow + 2 == destinationrow && cellrow == 1)) {
-                                cell.enpassent=1;
+                                cell.enpassent = 1;
                                 return true;
                             }
-                            else if(coldiff==0&&cellrow + 1 == destinationrow){
+                            else if (coldiff == 0 && cellrow + 1 == destinationrow) {
                                 return true;
                             }
-                            else if(cellrow + 1==destinationrow&&coldiff==1){
-                                if(cellcol>destinationcol){
-                                    if(chessboard[cellrow][cellcol-1].enpassent==1){
-                                        killables.push({x:destinationrow,y:destinationcol});
-                                        return("-1");
+                            else if (cellrow + 1 == destinationrow && coldiff == 1) {
+                                if (cellcol > destinationcol) {
+                                    if (chessboard[cellrow][cellcol - 1].enpassent == 1) {
+                                        killables.push({ x: destinationrow, y: destinationcol });
+                                        return ("-1");
                                     }
                                 }
-                                else if(cellcol<destinationcol){
-                                    if(chessboard[cellrow][cellcol+1].enpassent==1){
-                                        killables.push({x:destinationrow,y:destinationcol});
-                                        return("1");
+                                else if (cellcol < destinationcol) {
+                                    if (chessboard[cellrow][cellcol + 1].enpassent == 1) {
+                                        killables.push({ x: destinationrow, y: destinationcol });
+                                        return ("one");
                                     }
                                 }
-                            } 
+                            }
                         }
                     }
                     else if (destination != nullPiece) {
                         if (cell.color == "White") {
                             if (cellrow - destinationrow == 1 && coldiff == 1 && destination.color == "Black") {
-                                killables.push({x:destinationrow,y:destinationcol});
+                                killables.push({ x: destinationrow, y: destinationcol });
                                 return true;
                             }
                         }
                         if (cell.color == "Black") {
                             if (cellrow - destinationrow == -1 && coldiff == 1 && destination.color == "White") {
-                                killables.push({x:destinationrow,y:destinationcol});
+                                killables.push({ x: destinationrow, y: destinationcol });
                                 return true;
                             }
                         }
@@ -487,55 +402,54 @@
                 }
                 else if (cell.type == "Knight") {
                     if (coldiff == 2 && rowdiff == 1 || coldiff == 1 && rowdiff == 2) {
-                        if(chessboard[destinationrow][destinationcol]!=nullPiece){
-                        killables.push({x:destinationrow,y:destinationcol});
-                    }
+                        if (chessboard[destinationrow][destinationcol] != nullPiece) {
+                            killables.push({ x: destinationrow, y: destinationcol });
+                        }
                         return true;
                     }
 
                 }
                 else if (cell.type == "King") {
-                    var coldifference=cellcol-destinationcol;
-                    var rowdifference=cellrow-destinationrow;
+                    var coldifference = cellcol - destinationcol;
+                    var rowdifference = cellrow - destinationrow;
                     if (coldiff < 2 && rowdiff < 2) {
-                        if(chessboard[destinationrow][destinationcol]!=nullPiece){
-                        killables.push({x:destinationrow,y:destinationcol});
-                    }
+                        if (chessboard[destinationrow][destinationcol] != nullPiece) {
+                            killables.push({ x: destinationrow, y: destinationcol });
+                        }
                         return true;
                     }
-                    else if(coldiff==2&&rowdiff==0)
-                    {
-                        if(CheckCastle(cellrow, cellcol, destinationrow, destinationcol,coldiff,rowdiff,coldifference,rowdifference,cell)=="queen_castle"){
-                            return("queen_castle");
+                    else if (coldiff == 2 && rowdiff == 0) {
+                        if (CheckCastle(cellrow, cellcol, destinationrow, destinationcol, coldiff, rowdiff, coldifference, rowdifference, cell) == "queen_castle") {
+                            return ("queen_castle");
                         }
-                        else if(CheckCastle(cellrow, cellcol, destinationrow, destinationcol,coldiff,rowdiff,coldifference,rowdifference,cell)=="castle"){
-                            return("castle");
+                        else if (CheckCastle(cellrow, cellcol, destinationrow, destinationcol, coldiff, rowdiff, coldifference, rowdifference, cell) == "castle") {
+                            return ("castle");
                         }
                     }
                 }
                 else if (cell.type == "Queen") {
-                    if(coldiff==rowdiff){
+                    if (coldiff == rowdiff) {
                         if (checkintermediates(cellrow, cellcol, destinationrow, destinationcol, "diagonal")) {
-                        return true;
+                            return true;
+                        }
                     }
-                    }
-                    else if((coldiff==0&&rowdiff!=0)||(rowdiff==0&&coldiff!=0)){
+                    else if ((coldiff == 0 && rowdiff != 0) || (rowdiff == 0 && coldiff != 0)) {
                         if (checkintermediates(cellrow, cellcol, destinationrow, destinationcol, "horizontal")) {
-                        return true;
-                    }
+                            return true;
+                        }
                     }
                 }
             }
 
         }
-        function validatecells(cellrow, cellcol) {
+        function validateCells(cellrow, cellcol) {
             var x, y;
             console.log("cells validating with cell id as ", x, y)
             for (x = 0; x < 8; x++) {
                 for (y = 0; y < 8; y++) {
-                    if (validatemove(cellrow, cellcol, x, y)) {
+                    if (validateMove(cellrow, cellcol, x, y)) {
                         // var cell = chessboard[x][y];
-                        validcells.push({ x: x, y: y });
+                        validCells.push({ x: x, y: y });
                     }
                 }
             }
@@ -543,89 +457,92 @@
         }
 
         function resetValidCells() {
-            validcells = [];
+            validCells = [];
+            // resetValidCells();
         }
+
         function checkintermediates(cellrow, cellcol, destinationrow, destinationcol, type) {
             var rowdifference = cellrow - destinationrow;
             var coldifference = cellcol - destinationcol;
             var coldiff = Math.abs(coldifference);
             var rowdiff = Math.abs(rowdifference);
-            var coldir = coldifference/coldiff;
-            var rowdir = rowdifference/rowdiff;
+            var coldir = coldifference / coldiff;
+            var rowdir = rowdifference / rowdiff;
 
             if (type == "diagonal") {
                 if (coldiff == rowdiff) {
                     for (var x = 1; x < coldiff; x++) {
-                        if(chessboard[cellrow-rowdir*x][cellcol-coldir*x]!=nullPiece){
+                        if (chessboard[cellrow - rowdir * x][cellcol - coldir * x] != nullPiece) {
                             return false;
                         }
                     }
-                    if(chessboard[destinationrow][destinationcol]!=nullPiece){
-                        killables.push({x:destinationrow,y:destinationcol});
+                    if (chessboard[destinationrow][destinationcol] != nullPiece) {
+                        killables.push({ x: destinationrow, y: destinationcol });
                     }
                     return true;
                 }
             }
             else if (type = "horizontal") {
-                    if (coldiff == 0) {
-                        for (var y = 1; y < rowdiff; y++) {
-                                if (chessboard[cellrow - y*rowdir][cellcol] != nullPiece) {
-                                    return false;
-                            }
+                if (coldiff == 0) {
+                    for (var y = 1; y < rowdiff; y++) {
+                        if (chessboard[cellrow - y * rowdir][cellcol] != nullPiece) {
+                            return false;
                         }
-                        if(chessboard[destinationrow][destinationcol]!=nullPiece){
-                        killables.push({x:destinationrow,y:destinationcol});
                     }
-                        return true;
+                    if (chessboard[destinationrow][destinationcol] != nullPiece) {
+                        killables.push({ x: destinationrow, y: destinationcol });
                     }
-                    else if (rowdiff == 0) {
-                        for (var z = 1; z < coldiff; z++) {
-                                if (chessboard[cellrow][cellcol - z*coldir] != nullPiece) {
-                                    return false;
-                                }
+                    return true;
+                }
+                else if (rowdiff == 0) {
+                    for (var z = 1; z < coldiff; z++) {
+                        if (chessboard[cellrow][cellcol - z * coldir] != nullPiece) {
+                            return false;
                         }
-                        if(chessboard[destinationrow][destinationcol]!=nullPiece){
-                        killables.push({x:destinationrow,y:destinationcol});
                     }
-                        return true;
+                    if (chessboard[destinationrow][destinationcol] != nullPiece) {
+                        killables.push({ x: destinationrow, y: destinationcol });
                     }
-                    else{
-                        return false;
-                    }
+                    return true;
+                }
+                else {
+                    return false;
                 }
             }
-            function resetkillables(){
-                console.log("killables reset");
-                killables=[];
-            }
-            function CheckCastle(cellrow, cellcol, destinationrow, destinationcol,coldiff,rowdiff,coldifference,rowdifference,cell){
-                if(cellcol>destinationcol&&chessboard[cellrow][0].moves_done==0&&cell.moves_done==0){
-                    for(var count=1;count<4;count++){
-                        if(chessboard[cellrow][cellcol-count]!=nullPiece){
-                            return (false);
-                        }
-                    }
-                    return("queen_castle");
-                }
-                if(cellcol<destinationcol&&chessboard[cellrow][7].moves_done==0&&cell.moves_done==0){
-                    for(var count=1;count<3;count++){
-                        if(chessboard[cellrow][cellcol+count]!=nullPiece){
-                            return (false);
-                        }
-                    }
-                    return("castle");
-                }
-            }
-            function resetpassent(row,col){
-                for(var x=0;x<8;x++){
-                    for(var y=0;y<8;y++){
-                        if(x!=row||y!=col){
-                            chessboard[x][y].enpassent=0;
-                        }
-                    }
-                }
-            }
+        }
+        function resetKillables() {
+            killables = [];
+            // resetKillables();
+        }
 
+        function CheckCastle(cellrow, cellcol, destinationrow, destinationcol, coldiff, rowdiff, coldifference, rowdifference, cell) {
+            if (cellcol > destinationcol && chessboard[cellrow][0].moves_done == 0 && cell.moves_done == 0) {
+                for (var count = 1; count < 4; count++) {
+                    if (chessboard[cellrow][cellcol - count] != nullPiece) {
+                        return (false);
+                    }
+                }
+                return ("queen_castle");
+            }
+            if (cellcol < destinationcol && chessboard[cellrow][7].moves_done == 0 && cell.moves_done == 0) {
+                for (var count = 1; count < 3; count++) {
+                    if (chessboard[cellrow][cellcol + count] != nullPiece) {
+                        return (false);
+                    }
+                }
+                return ("castle");
+            }
+        }
+        function resetpassent(row, col) {
+            for (var x = 0; x < 8; x++) {
+                for (var y = 0; y < 8; y++) {
+                    if (x != row || y != col) {
+                        chessboard[x][y].enpassent = 0;
+                    }
+                }
+            }
+        }
 
+       
     </script>
 </body>
