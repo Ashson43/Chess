@@ -20,9 +20,6 @@ class Game {
     }
 
 
-    reset() {
-
-    }
 
     resetKillables() {
         this.killables = [];
