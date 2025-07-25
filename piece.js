@@ -14,43 +14,43 @@ class Piece {
                 switch (this.type) {
                     case "King":
                         return "\u2654"; //"♔"
-                    
+
                     case "Queen":
                         return "\u2655";
-                        // return "♕";
+                    // return "♕";
                     case "Rook":
                         return "\u2656";
-                        // return "♖";
+                    // return "♖";
                     case "Bishop":
                         return "\u2657";
-                        // return "♗";
+                    // return "♗";
                     case "Knight":
                         return "\u2658";
-                        // return "♘";
+                    // return "♘";
                     case "Pawn":
                         return "\u2659"
-                        // return "♙";
+                    // return "♙";
                 }
             case "Black":
                 switch (this.type) {
                     case "King":
                         return "\u265A"; //"♔"
-                    
+
                     case "Queen":
                         return "\u265B";
-                        // return "♕";
+                    // return "♕";
                     case "Rook":
                         return "\u265C";
-                        // return "♖";
+                    // return "♖";
                     case "Bishop":
                         return "\u265D";
-                        // return "♗";
+                    // return "♗";
                     case "Knight":
                         return "\u265E";
-                        // return "♘";
+                    // return "♘";
                     case "Pawn":
                         return "\u265F"
-                        // return "♙";
+                    // return "♙";
                 }
             default: return "";
         }

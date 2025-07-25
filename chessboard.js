@@ -1,4 +1,4 @@
-var nullPiece = new Piece("", "", 0, -1);
+var nullPiece = new Piece("", "");
 
 
 var INVALID_MOVE = {
@@ -71,7 +71,9 @@ function checkMove(chessboard, sourceRow, sourceColumn, destinationRow, destinat
         case "Queen":
             return checkMoveForQueen(chessboard, sourceRow, sourceColumn, destinationRow, destinationColumn);
         case "Knight":
-            return checkMoveForKnight(chessboard, sourceRow, sourceColumn, destinationRow, destinationColumn)
+            return checkMoveForKnight(chessboard, sourceRow, sourceColumn, destinationRow, destinationColumn);
+        case "King":
+            return checkMoveForKing(chessboard, sourceRow, sourceColumn, destinationRow, destinationColumn);
 
 
         default:
@@ -184,8 +186,69 @@ function checkMoveForKnight(chessboard, sourceRow, sourceColumn, destinationRow,
             type: "simple"
         }
     }
-    
+
     return INVALID_MOVE;
+}
+
+function checkMoveForKing(chessboard, sourceRow, sourceColumn, destinationRow, destinationColumn) {
+
+    var destination = chessboard[destinationRow][destinationColumn];
+    var rowDifference = sourceRow - destinationRow;
+    var colDifference = sourceColumn - destinationColumn;
+    var colDiff = Math.abs(colDifference);
+    var rowDiff = Math.abs(rowDifference);
+
+
+    if (rowDiff <= 1 && colDiff <= 1) {
+        willKill = destination != nullPiece ? true : false;
+        return {
+            isValid: true,
+            willKill: willKill,
+            type: "simple"
+        }
+    }
+
+
+
+    if (colDiff == 2 && rowDiff == 0) {
+
+        //Check for castling
+
+        type = checkCastle(sourceRow, sourceColumn, destinationRow, destinationColumn);
+
+        if (type == "none")
+
+            return INVALID_MOVE;
+
+        return {
+            isValid: true,
+            willKill: false,
+            type: type
+        }
+
+    }
+    else {
+        return INVALID_MOVE;
+    }
+}
+function checkCastle(sourceRow, sourceColumn, destinationRow, destinationColumn) {
+    var cell = chessboard[sourceRow][sourceColumn];
+    if (sourceColumn > destinationColumn && chessboard[sourceRow][0].moves_done == 0 && cell.moves_done == 0) {
+        for (var count = 1; count < 4; count++) {
+            if (chessboard[sourceRow][sourceColumn - count] != nullPiece) {
+                return ("none");
+            }
+        }
+        return ("queen_castle");
+    }
+    if (sourceColumn < destinationColumn && chessboard[sourceRow][7].moves_done == 0 && cell.moves_done == 0) {
+        for (var count = 1; count < 3; count++) {
+            if (chessboard[sourceRow][sourceColumn + count] != nullPiece) {
+                return ("none");
+            }
+        }
+        return ("king_castle");
+    }
 }
 
 
