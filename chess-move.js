@@ -1,0 +1,6 @@
+const CHESS_MOVE = {
+    INVALID_MOVE: "INVALID_MOVE",
+    VALID_MOVE: "VALID_MOVE"
+
+};
+
