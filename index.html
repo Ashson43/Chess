@@ -4,8 +4,9 @@
 <head>
     <link rel="stylesheet" href="chess-styles.css">
     <script src="piece.js"></script>
+    <script src="chess-move.js" ></script>
     <script src="chessboard.js"></script>
-    <!-- <script src="game.js" ></script> -->
+    
 </head>
 
 <body onload="resetboard()">
@@ -59,8 +60,8 @@
         let history = [];
 
         function cellClicked(cellId) {
-            var row = Math.floor(cellId / 8);
-            var col = cellId % 8;
+
+            var {row,col} = cellToRowCol(cellId);
             var selectedPiece = chessboard[row][col];
 
 
@@ -365,8 +366,8 @@
                 if (destination == nullPiece) {
                     if (cell.color == "White" && chessboard[cellrow - 1][cellcol] == nullPiece) {
                         if ((coldiff == 0 && (cellrow - 2 == destinationrow && cellrow == 6))) {
-                           console.log("Setting enpassentPiece to ", cell);
-                           enpassentPiece = cell;
+                            console.log("Setting enpassentPiece to ", cell);
+                            enpassentPiece = cell;
                             return true;
                         }
                         else if (cellrow - 1 == destinationrow && coldiff == 0) {
@@ -461,9 +462,9 @@
 
 
         function validateCells(cellrow, cellcol) {
-            var x, y;
-            for (x = 0; x < 8; x++) {
-                for (y = 0; y < 8; y++) {
+
+            for (var x = 0; x < 8; x++) {
+                for (var y = 0; y < 8; y++) {
                     if (validateMove(cellrow, cellcol, x, y)) {
                         // var cell = chessboard[x][y];
                         validCells.push({ x: x, y: y });
@@ -515,6 +516,13 @@
 
         // }
 
+        function cellToRowCol(cellId) {
+            return {
+                row: Math.floor(cellId / 8),
+                col: cellId % 8
+            }
+
+        }
 
 
 

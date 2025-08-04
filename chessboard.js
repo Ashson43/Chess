@@ -214,7 +214,7 @@ function checkMoveForKing(chessboard, sourceRow, sourceColumn, destinationRow, d
 
         //Check for castling
 
-        type = checkCastle(sourceRow, sourceColumn, destinationRow, destinationColumn);
+        type = checkCastle(chessboard, sourceRow, sourceColumn, destinationRow, destinationColumn);
 
         if (type == "none")
 
@@ -231,7 +231,7 @@ function checkMoveForKing(chessboard, sourceRow, sourceColumn, destinationRow, d
         return INVALID_MOVE;
     }
 }
-function checkCastle(sourceRow, sourceColumn, destinationRow, destinationColumn) {
+function checkCastle(chessboard, sourceRow, sourceColumn, destinationRow, destinationColumn) {
     var cell = chessboard[sourceRow][sourceColumn];
     if (sourceColumn > destinationColumn && chessboard[sourceRow][0].moves_done == 0 && cell.moves_done == 0) {
         for (var count = 1; count < 4; count++) {
